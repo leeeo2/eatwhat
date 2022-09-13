@@ -119,5 +119,5 @@ func main() {
 	router.StaticFS("/public", http.Dir("website/static"))
 
 	// Listen and serve on 0.0.0.0:80
-	router.Run(":80")
+	router.Run(common.GlobalConfig().Server.ListenAddr)
 }

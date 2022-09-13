@@ -14,8 +14,7 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	GrpcListenAddr    string `yaml:"GrpcListenAddr"`
-	GatewayListenAddr string `yaml:"GatewayListenAddr"`
+	ListenAddr string `yaml:"ListenAddr"`
 }
 
 type Database struct {
