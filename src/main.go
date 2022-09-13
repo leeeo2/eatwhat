@@ -116,7 +116,7 @@ func main() {
 	})
 
 	// 静态资源加载，本例为css,js以及资源图片
-	router.StaticFS("/public", http.Dir("website/static"))
+	router.StaticFS("/eatwhat", http.Dir("website/static"))
 
 	// Listen and serve on 0.0.0.0:80
 	router.Run(common.GlobalConfig().Server.ListenAddr)
