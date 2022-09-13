@@ -1,0 +1,165 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+        integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+    <title>今天吃什么</title>
+</head>
+
+<body>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <div id="app">
+        <img src="./img/cake1.jpeg" class="img-responsive" alt="Responsive image"><br>
+
+        <div class="container">
+            <button class="btn btn-default" @click="showAddWidget = !showAddWidget">添加备选</button>
+            <button class="btn btn-default" v-show="!showAddWidget" @click="eatWhat">随机一个</button>
+
+            <!-- 今日菜单 -->
+            <div v-show="!showAddWidget">
+                <h3>今日菜单</h3>
+                <table class="table table-condensed table-hover">
+                    <tr class="danger">
+                        <th hidden>ID</th>
+                        <th>名称</th>
+                        <th>描述</th>
+                    </tr>
+                    <tr class="success" v-for="dish in todayDishes" :key="dish.Id">
+                        <th hidden>{{dish.Id}}</th>
+                        <th>{{dish.Name}}</th>
+                        <th>{{dish.Desc}}</th>
+                    </tr>
+                </table>
+            </div>
+            <!-- 添加菜品 -->
+            <div v-show="showAddWidget">
+                <h3>添加备选</h3>
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label>菜名 </label>
+                        <input type="text" v-model="addName"><br>
+                    </div>
+                    <div class="form-group">
+                        <label>备注 </label>
+                        <input type="text" v-model="addDescription"><br>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-default btn-sm" @click="addDish">添加</button>
+                        <button class="btn btn-default btn-sm" @click="showAddWidget = false">完成</button>
+                    </div>
+                </form>
+            </div>
+            <!-- 所有菜单 -->
+            <div class="describe_dishes">
+                <h3>备选菜单</h3>
+                <table class="table table-condensed table-hover">
+                    <tr class="danger">
+                        <th hidden>ID</th>
+                        <th>名称</th>
+                        <th>描述</th>
+                        <th>-</th>
+                    </tr>
+                    <tr class="success" v-for="dish in allDishes" :key="dish.Id">
+                        <th hidden>{{dish.Id}}</th>
+                        <th>{{dish.Name}}</th>
+                        <th>{{dish.Desc}}</th>
+                        <th><button type="button" class="btn btn-default" @click="deleteDish(dish.Id)">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button></th>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    showAddWidget: false,
+                    allDishes: [],
+                    todayDishes: [],
+                    addName: "",
+                    addDescription: ""
+                }
+            },
+            methods: {
+                async addDish() {
+                    console.log(`add dish: ${this.addName}:${this.addDescription}`)
+
+                    url = "/AddDish?DishName=" + this.addName + "&Description=" + this.addDescription
+                    await axios
+                        .get(url)
+                        .then(function (response) {
+                            console.log(response);
+                            this.allDishes.push({ "Id": 1, "Name": this.addName, "Desc": this.addDescription });
+                            this.showAddWidget = !this.showAddWidget;
+                        })
+                        .catch(function (error) { // 请求失败处理
+                            console.log(error);
+                        });
+                    this.describeDishes();
+                },
+                async eatWhat() {
+                    url = "/EatWhat?Count=1"
+                    let dishes = await axios({
+                        method: 'get',
+                        url: url,
+                        responseType: 'json',
+                    }).then(function (response) {
+                        console.log("response:" + JSON.stringify(response));
+                        return response.data.Dishes;
+                    })
+                        .catch(function (error) { // 请求失败处理
+                            console.log(error);
+                        });
+                    this.todayDishes = dishes;
+                },
+                async deleteDish(id) {
+                    console.log(`delete dish`, id)
+                    url = "/DeleteDish?Id=" + id
+                    await axios
+                        .get(url)
+                        .then(response => console.log(response))
+                        .catch(function (error) { // 请求失败处理
+                            console.log(error);
+                        });
+                    this.describeDishes();
+                },
+                async describeDishes() {
+                    console.log(`describe dishes`)
+                    url = "/DescribeDishes"
+                    let dishes = await axios({
+                        method: 'get',
+                        url: url,
+                        responseType: 'json',
+                    }).then(function (response) {
+                        console.log("response:" + JSON.stringify(response.data.Dishes));
+                        return response.data.Dishes;
+                    })
+                        .catch(function (error) { // 请求失败处理
+                            console.log(error);
+                        });
+                    this.allDishes = dishes;
+                }
+            },
+            mounted() {
+                this.describeDishes()
+            },
+        }).mount('#app')
+    </script>
+
+
+</body>
+
+</html>

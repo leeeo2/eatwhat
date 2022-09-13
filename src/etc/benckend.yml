@@ -1,0 +1,10 @@
+Server:
+    ListenAddr: :8888
+
+Database:
+    Type: mysql
+    User: dog
+    Password: 1qaz!QAZ
+    Host: localhost:3306
+    Schema: eatwhat
+    
