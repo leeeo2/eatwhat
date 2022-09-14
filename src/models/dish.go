@@ -7,8 +7,8 @@ import (
 
 type Dish struct {
 	BaseModel
-	Name        string
 	Description string
+	Type        string
 }
 
 func (d *Dish) Save(ctx context.Context) {
@@ -19,18 +19,9 @@ func (d *Dish) Save(ctx context.Context) {
 	}
 }
 
-func SaveUserInBatch(ctx context.Context, dishes *[]Dish) error {
-	db := GetDB()
-	err := db.Create(dishes).Error
-	if err != nil {
-		log.Println("create user failed.", "err:", err.Error())
-	}
-	return nil
-}
-
 func GetAllDishes(ctx context.Context) (dishes []Dish, err error) {
 	db := GetDB()
-	err = db.Find(&dishes).Error
+	err = db.Order("type").Find(&dishes).Error
 	if err != nil {
 		log.Println("get all error:", err)
 		return nil, err
@@ -38,19 +29,9 @@ func GetAllDishes(ctx context.Context) (dishes []Dish, err error) {
 	return dishes, nil
 }
 
-func GetAllDishesByNames(ctx context.Context, names []string) (dishes []Dish, err error) {
+func RandTakeDish(ctx context.Context, t string, limit int) (dishes []Dish, err error) {
 	db := GetDB()
-	err = db.Where("name IN ?", names).Find(&dishes).Error
-	if err != nil {
-		log.Println("get all by names error:", err)
-		return nil, err
-	}
-	return dishes, nil
-}
-
-func RandTakeDish(ctx context.Context, limit int) (dishes []Dish, err error) {
-	db := GetDB()
-	err = db.Limit(limit).Order("RAND()").Find(&dishes).Error
+	err = db.Limit(limit).Order("RAND()").Where("type like ?", "%"+t+"%").Find(&dishes).Error
 	if err != nil {
 		log.Println("randTake error:", err)
 		return nil, err

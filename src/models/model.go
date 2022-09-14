@@ -14,11 +14,10 @@ import (
 var db *gorm.DB
 
 type BaseModel struct {
-	Id string `gorm:"type:varchar(255);not null;primaryKey"`
-	//Id        int            `gorm:"-;primary_key;AUTO_INCREMENT"`
-	CreatedAt time.Time      `gorm:"type:datetime(6);not null;index:created_at;default:current_timestamp(6)"`
-	UpdatedAt time.Time      `gorm:"type:datetime(6);not null;index:updated_at;default:current_timestamp(6) on update current_timestamp(6)"`
-	DeletedAt gorm.DeletedAt `gorm:"type:datetime(6);index:deleted_at"`
+	Id        string    `gorm:"type:varchar(255);not null;primaryKey"`
+	CreatedAt time.Time `gorm:"type:datetime(6);not null;index:created_at;default:current_timestamp(6)"`
+	UpdatedAt time.Time `gorm:"type:datetime(6);not null;index:updated_at;default:current_timestamp(6) on update current_timestamp(6)"`
+	//DeletedAt gorm.DeletedAt `gorm:"type:datetime(6);index:deleted_at"`
 }
 
 func Setup(ctx context.Context) {

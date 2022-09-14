@@ -5,6 +5,6 @@ Database:
     Type: mysql
     User: dog
     Password: 1qaz!QAZ
-    Host: localhost:3306
+    Host: 1.117.182.32:3306
     Schema: eatwhat
     
